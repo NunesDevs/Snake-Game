@@ -13,8 +13,8 @@ Este é um jogo simples de "Snake" feito em Python usando a biblioteca `pygame`.
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/seu-usuario/snake-game.git
-    cd snake-game
+    git clone https://github.com/NunesDevs/Snake-Game.git
+    cd Snake-Game
     ```
 
 2. Instale as dependências:
@@ -45,4 +45,4 @@ Se você tiver sugestões ou melhorias para o jogo, fique à vontade para contri
 
 ---
 
-Desenvolvido por [Seu Nome](https://github.com/seu-usuario).
+Desenvolvido por NunesDevs.
