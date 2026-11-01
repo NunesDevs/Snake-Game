@@ -46,3 +46,37 @@ Se você tiver sugestões ou melhorias para o jogo, fique à vontade para contri
 ---
 
 Desenvolvido por NunesDevs.
+
+## Operação e arquitetura verificadas
+
+main.py chama gameLoop em game/game.py. O módulo define o jogo e inicializa a janela somente quando essa função é chamada.
+
+Arquivos principais: `main.py`, `game/game.py`, `requirements.txt`.
+
+### Requisitos e execução
+
+Python 3, Pygame e ambiente gráfico.
+
+```text
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python main.py
+python -m unittest discover -s tests -v
+```
+
+
+
+### Testes e estado
+
+A suíte unittest valida importação sem abrir janela e o ciclo de encerramento com um substituto controlado de PyGame. Ela não substitui o teste visual com PyGame instalado.
+
+Estado: projeto de estudo/experimental. Deploy ativo não foi confirmado nesta revisão.
+
+### Limitações conhecidas
+
+- Teste de inicialização usou PyGame simulado; renderização real e controles precisam teste em janela.
+- Dependência pygame==2.4.0 precisa ambiente compatível para instalação.
+
+### Licença e manutenção
+
+Nenhum arquivo de licença foi identificado nesta revisão; não foi adicionada uma nova licença. Atualize comandos e limitações quando houver mudança de comportamento.
