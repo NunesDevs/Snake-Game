@@ -9,3 +9,5 @@ Revisão: 2026-11-01. O aplicativo Python/Pygame permanece independente. A nova 
 Validação: `node --test tests/*.test.mjs`, `node --check web/main.mjs`, `node tools/build-web.mjs`; browser com teclado, toque, comida/pontuação, pausa, reinício, colisão, sandbox e oito larguras. `python -m unittest discover -s tests -v` continua validando o launcher com Pygame controlado, sem equivaler a renderização real. A dependência desktop existente continua `pygame==2.4.0` e exige revisão de compatibilidade na etapa desktop.
 
 Prioridade: publicar o baseline browser junto do portfólio antes de novas mecânicas. Melhorias adicionais do aplicativo Python e embalagem desktop são uma etapa distinta.
+
+Correção integrada de resize: o cálculo de desenho está em `web/render-layout.mjs`. Dimensões temporariamente nulas ou pequenas demais não geram paths; segmentos e raio são limitados a valores válidos. Treze testes Node passaram, incluindo geometrias mínimas. Uma regressão real em iframe sandbox percorreu nove dimensões (inclusive 0, 1 e 16 px), em DPR 1 e 2: dezoito casos sem pageerror, com desenho restaurado e pausa funcional.

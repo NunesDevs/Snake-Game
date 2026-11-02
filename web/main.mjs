@@ -1,5 +1,6 @@
 import { createSnake, startSnake, turnSnake, pauseSnake, resumeSnake, resetSnake, setSnakeRate, advanceSnake } from './engine.mjs';
 import { readBest, connectScoreBridge, connectResizeBridge, formatScore } from './bridge.mjs';
+import { boardLayout } from './render-layout.mjs';
 
 const $ = id => document.getElementById(id);
 const root = $('playground'), stage = $('stage'), canvas = $('world'), context = canvas.getContext('2d');
@@ -10,13 +11,19 @@ const bridge = connectScoreBridge({ id: 'snake', getBest: () => game.best,
   onBest: best => { game = { ...game, best }; render(); }, onPause: () => update(pauseSnake(game)) });
 
 function paint() {
-  const width = stage.clientWidth, height = stage.clientHeight, ratio = Math.min(window.devicePixelRatio || 1, 2);
-  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
-    canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+  const width = stage.clientWidth, height = stage.clientHeight;
+  const layout = boardLayout(width, height, game.cols, game.rows, window.devicePixelRatio);
+  if (!layout) {
+    // Do not issue paths with negative geometry; ResizeObserver repaints when usable.
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  const { ratio, size, segment, radius, x, y, pixelWidth, pixelHeight } = layout;
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth; canvas.height = pixelHeight;
   }
   context.setTransform(ratio, 0, 0, ratio, 0, 0);context.clearRect(0, 0, width, height);
-  const size = Math.min((width - 24) / game.cols, (height - 24) / game.rows);
-  const x = (width - size * game.cols) / 2, y = (height - size * game.rows) / 2;
   context.strokeStyle = '#303740';context.globalAlpha = 0.35;context.lineWidth = 1;
   context.beginPath();
   for (let c = 0; c <= game.cols; c++) { context.moveTo(x + c * size, y);context.lineTo(x + c * size, y + size * game.rows); }
@@ -24,7 +31,7 @@ function paint() {
   context.stroke();context.globalAlpha = 1;
   game.body.forEach((cell, index) => {
     context.fillStyle = '#007bff';context.globalAlpha = index === 0 ? 1 : 0.65;
-    context.beginPath();context.roundRect(x + cell.x * size + 1, y + cell.y * size + 1, size - 2, size - 2, Math.min(4, size / 4));context.fill();
+    context.beginPath();context.roundRect(x + cell.x * size + 1, y + cell.y * size + 1, segment, segment, radius);context.fill();
   });
   context.globalAlpha = 1;
   if (game.food) { context.fillStyle = '#ffca72';context.beginPath();context.arc(x + (game.food.x + 0.5) * size, y + (game.food.y + 0.5) * size, size * 0.36, 0, Math.PI * 2);context.fill(); }
