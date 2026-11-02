@@ -1,82 +1,46 @@
-# Snake Game
+# Snake Game / Snake Grid
 
-Este é um jogo simples de "Snake" feito em Python usando a biblioteca `pygame`. O objetivo do jogo é controlar a cobra, comer a comida e crescer. O jogo termina quando a cobra bate nas bordas ou colide consigo mesma.
+Jogo Snake com aplicativo desktop Python/Pygame e uma demo independente para navegador. A interface da demo web foi desenhada no Figma; o aplicativo Python foi preservado.
 
-## Como Rodar
+## Demo web
 
-### Pré-requisitos
+- Setas ou **WASD** movem a cobra; botões direcionais e gestos atendem telas de toque.
+- **P / Espaço** pausa ou continua; **R** reinicia.
+- Pontuação, crescimento ao comer e melhor resultado.
+- Velocidade inicial ajustável. A mudança reinicia a partida.
+- Colisão com paredes ou corpo encerra a partida.
+- Pausa automática ao perder foco ou ocultar a experiência.
 
-1. Instalar o Python (recomendado Python 3.6 ou superior).
-2. Instalar a biblioteca `pygame`.
+A comida nasce em uma célula livre. As entradas são limitadas a uma mudança de direção por movimento e não permitem inversão imediata. O caso de tabuleiro completo encerra a simulação sem entrar em loop de geração de comida.
 
-### Instalação
+Node.js 22 ou superior; a demo não precisa de pacotes de instalação.
 
-1. Clone o repositório:
-    ```bash
-    git clone https://github.com/NunesDevs/Snake-Game.git
-    cd Snake-Game
-    ```
+```sh
+node --test tests/*.test.mjs
+node --check web/main.mjs
+node tools/build-web.mjs
+python -m http.server 8000 --bind 127.0.0.1 --directory dist
+```
 
-2. Instale as dependências:
-    ```bash
-    pip install -r requirements.txt
-    ```
+Abra `http://127.0.0.1:8000`. `dist/` contém somente HTML, JavaScript, CSS, vetores, fontes e licenças necessários. A pasta do aplicativo desktop não é copiada para a demo.
 
-### Executando o Jogo
+`web/engine.mjs` contém a engine de grade, independente do Canvas e de timers. `web/main.mjs` conecta renderização e controles. A ponte em `web/bridge.mjs` permite ao host de um iframe isolado controlar pausa, persistir recordes e ajustar a altura. Falhas de storage em origem opaca são tratadas; o host deve liberar CORS para os recursos públicos.
 
-1. Execute o jogo com o seguinte comando:
-    ```bash
-    python main.py
-    ```
+## Aplicativo desktop
 
-2. Use as teclas de seta para controlar a cobra (cima, baixo, esquerda, direita).
-
-## Estrutura do Repositório
-
-- `game/game.py`: Contém o código principal do jogo.
-- `main.py`: Arquivo para iniciar o jogo.
-- `requirements.txt`: Lista de dependências.
-- `.gitignore`: Arquivos a serem ignorados pelo Git.
-- `README.md`: Documentação do projeto.
-
-## Contribuições
-
-Se você tiver sugestões ou melhorias para o jogo, fique à vontade para contribuir! Basta criar um fork do repositório, fazer suas alterações e enviar um pull request.
-
----
-
-Desenvolvido por NunesDevs.
-
-## Operação e arquitetura verificadas
-
-main.py chama gameLoop em game/game.py. O módulo define o jogo e inicializa a janela somente quando essa função é chamada.
-
-Arquivos principais: `main.py`, `game/game.py`, `requirements.txt`.
-
-### Requisitos e execução
-
-Python 3, Pygame e ambiente gráfico.
-
-```text
+```sh
 python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python main.py
+.venv/Scripts/python -m pip install -r requirements.txt
+.venv/Scripts/python main.py
 python -m unittest discover -s tests -v
 ```
 
+O aplicativo usa `main.py` e `game/game.py`, com `pygame==2.4.0` conforme o manifesto existente. Requer um ambiente gráfico e uma versão de Python compatível com esse pacote. A revisão de inicialização usa um substituto controlado de Pygame; não equivale a uma sessão gráfica real.
 
+## Validação
 
-### Testes e estado
+A engine web tem testes de células, comida, crescimento, pontuação, fila de direção, colisões, movimento para a cauda que está saindo, tabuleiro completo, pausa e reinício. As pontes têm testes de mensagens inválidas, limites, storage e altura. No navegador, teclado, toque, pontuação e iframe isolado foram exercitados; oito larguras entre 320 e 1920 px ficaram sem overflow.
 
-A suíte unittest valida importação sem abrir janela e o ciclo de encerramento com um substituto controlado de PyGame. Ela não substitui o teste visual com PyGame instalado.
+## Licença
 
-Estado: projeto de estudo/experimental. Deploy ativo não foi confirmado nesta revisão.
-
-### Limitações conhecidas
-
-- Teste de inicialização usou PyGame simulado; renderização real e controles precisam teste em janela.
-- Dependência pygame==2.4.0 precisa ambiente compatível para instalação.
-
-### Licença e manutenção
-
-Nenhum arquivo de licença foi identificado nesta revisão; não foi adicionada uma nova licença. Atualize comandos e limitações quando houver mudança de comportamento.
+MIT em `LICENSE` para o código próprio. Fontes DM Sans e Space Grotesk acompanham seus avisos SIL Open Font License em `web/assets/fonts/`. As licenças dos componentes de terceiros continuam aplicáveis a eles.
