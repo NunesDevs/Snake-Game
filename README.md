@@ -16,6 +16,8 @@ A comida e o bônus nascem em células livres. Uma única mudança de direção 
 
 ## Demo web
 
+[Abrir Snake Grid](https://nunesdevs.github.io/Snake-Game/) · [Portfólio NunesDevs](https://nunesdevs.nunexx.com.br)
+
 **Setas / WASD** movem; **P / Espaço** pausa; **R** reinicia. Também há botões direcionais e gestos de deslizar. O jogo pausa quando perde foco ou a página fica oculta. Mudar o modo ou ritmo reinicia a partida e preserva o recorde local.
 
 Node.js **24 ou superior**; o runtime não exige instalação de dependências.
