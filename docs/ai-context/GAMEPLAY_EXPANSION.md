@@ -9,3 +9,5 @@ Validação: 21 testes Node sem skips; sete fluxos Playwright e oito larguras320
 As tentativas iniciais do harness com método Clock.uninstall inexistente e relógio sem pausa não contam como aprovadas; foram corrigidas para contextos isolados e pausa explícita, seguidas de execução completa verde. A aplicação não foi alterada para encobrir falhas de teste.
 
 Próximos gates: commit e push da branch, CI remota, fast-forward de main autorizado, release correspondente e importação apenas do runtime aprovado para o portfólio. Deploy só é concluído após verificar domínio e bytes publicados.
+
+CI remota inicial e6536a8 não criou jobs por comando pip em scalar YAML com dois-pontos; movido para bloco literal em commit separado. Esta falha não altera o SHA do código/runtime capturado. Execução remota verde continua sendo gate obrigatório antes da integração.
