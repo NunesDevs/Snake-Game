@@ -7,3 +7,5 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .snake-stage{touch-action:none}.snake-overlay h2{max-width:100%}@media(max-width:600px){.snake-overlay h2{font-size:20px;line-height:28px}}
+
+.game-settings{display:flex;flex-wrap:wrap;gap:12px}.game-settings .setting{align-items:stretch;flex-direction:column;gap:6px;min-width:180px}.setting>span:not(.sr-only){color:var(--muted);font-size:13px;line-height:20px}@media(max-width:600px){.game-settings{flex-direction:column}.game-settings .setting{min-width:0}.game-settings select{width:100%}}

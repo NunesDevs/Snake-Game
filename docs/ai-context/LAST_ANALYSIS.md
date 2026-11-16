@@ -1,3 +1,5 @@
+> Estado atual: consulte [GAMEPLAY_EXPANSION.md](GAMEPLAY_EXPANSION.md) e o README para a ampliação de15/11/2026. O conteúdo abaixo registra a análise anterior.
+
 # Última análise automática
 
 <!-- AUTO-GENERATED:START -->

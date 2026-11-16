@@ -1,8 +1,21 @@
 {
   "name": "snake-grid-demo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test tests/*.test.mjs", "build": "node tools/build-web.mjs", "check": "node --check web/main.mjs" }
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "build": "node tools/build-web.mjs",
+    "verify": "node --check web/main.mjs && node --test tests/*.test.mjs && node tools/build-web.mjs",
+    "test:e2e": "node tools/qa.mjs",
+    "check": "node --check web/main.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "license": "MIT"
 }

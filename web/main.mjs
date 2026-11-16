@@ -1,10 +1,13 @@
-import { createSnake, startSnake, turnSnake, pauseSnake, resumeSnake, resetSnake, setSnakeRate, advanceSnake } from './engine.mjs';
+import { createSnake, startSnake, turnSnake, pauseSnake, resumeSnake, resetSnake, setSnakeRate, setSnakeMode, advanceSnake } from './engine.mjs';
 import { readBest, connectScoreBridge, connectResizeBridge, formatScore } from './bridge.mjs';
 import { boardLayout } from './render-layout.mjs';
 
 const $ = id => document.getElementById(id);
 const root = $('playground'), stage = $('stage'), canvas = $('world'), context = canvas.getContext('2d');
 const resizeBridge = connectResizeBridge({ id: 'snake', element: root });
+const barrier = new Image(), bonus = new Image();
+barrier.src = new URL('./assets/barrier.svg', import.meta.url).href;
+bonus.src = new URL('./assets/bonus.svg', import.meta.url).href;
 let game = createSnake({ best: readBest('snake') });
 let frameId = 0, previous = null, lastStatus = '', pointer = null;
 const bridge = connectScoreBridge({ id: 'snake', getBest: () => game.best,
@@ -29,6 +32,9 @@ function paint() {
   for (let c = 0; c <= game.cols; c++) { context.moveTo(x + c * size, y);context.lineTo(x + c * size, y + size * game.rows); }
   for (let r = 0; r <= game.rows; r++) { context.moveTo(x, y + r * size);context.lineTo(x + size * game.cols, y + r * size); }
   context.stroke();context.globalAlpha = 1;
+  if (game.mode === 'portal') { context.strokeStyle = '#007bff';context.lineWidth = 2;context.strokeRect(x, y, size * game.cols, size * game.rows); }
+  for (const cell of game.walls) if (barrier.complete && barrier.naturalWidth) context.drawImage(barrier, x + cell.x * size, y + cell.y * size, size, size);
+  if (game.bonus && bonus.complete && bonus.naturalWidth) context.drawImage(bonus, x + game.bonus.x * size, y + game.bonus.y * size, size, size);
   game.body.forEach((cell, index) => {
     context.fillStyle = '#007bff';context.globalAlpha = index === 0 ? 1 : 0.65;
     context.beginPath();context.roundRect(x + cell.x * size + 1, y + cell.y * size + 1, segment, segment, radius);context.fill();
@@ -42,12 +48,13 @@ function render() {
   $('best').textContent = formatScore(game.best);
   $('score').setAttribute('aria-label', game.score + ' pontos');
   $('best').setAttribute('aria-label', game.best + ' pontos de recorde');
-  $('speed').textContent = game.rate + '/s';stage.dataset.status = game.status;
+  $('speed').textContent = game.rate + '/s';stage.dataset.status = game.status;stage.dataset.mode = game.mode;
+  $('mode-help').textContent = ({ classic: 'Clássico: evite paredes e corpo.', portal: 'Portais: atravesse as bordas e reapareça do outro lado.', arena: 'Arena: desvie das barreiras marcadas.' })[game.mode] + ' Comida: +10 · Bônus verde a cada 4 comidas: +30.';
   $('toggle').textContent = game.status === 'running' ? 'Pausar' : game.status === 'paused' ? 'Continuar' : ['gameover', 'won'].includes(game.status) ? 'Jogar de novo' : 'Começar';
   $('overlay').hidden = game.status === 'running';
   if (game.status !== lastStatus) {
     lastStatus = game.status;
-    const states = { ready: ['Um caminho. Muitas escolhas.', 'Coma, cresça e evite as paredes.', 'Começar'], paused: ['Jogo pausado', 'Seu próximo movimento pode esperar.', 'Continuar'], gameover: ['Fim de jogo.', game.score + ' pontos. Vamos tentar outra rota?', 'Jogar de novo'], won: ['Tabuleiro completo!', game.score + ' pontos. Caminho concluído.', 'Jogar de novo'] };
+    const states = { ready: ['Escolha sua próxima rota.', game.mode === 'portal' ? 'Atravesse as bordas e explore os portais.' : game.mode === 'arena' ? 'Desvie das barreiras e planeje o caminho.' : 'Coma, cresça e evite as paredes.', 'Começar'], paused: ['Jogo pausado', 'Seu próximo movimento pode esperar.', 'Continuar'], gameover: ['Fim de jogo.', game.score + ' pontos. Vamos tentar outra rota?', 'Jogar de novo'], won: ['Tabuleiro completo!', game.score + ' pontos. Caminho concluído.', 'Jogar de novo'] };
     if (states[game.status]) {
       [$('state-title').textContent, $('state-hint').textContent, $('state-action').textContent] = states[game.status];
       $('announcement').textContent = states[game.status][0] + (['gameover', 'won'].includes(game.status) ? ' ' + game.score + ' pontos.' : '');
@@ -80,6 +87,7 @@ function direction(value) {
 }
 function reset() { bridge.report();update(resetSnake(game));stage.focus({ preventScroll: true }); }
 $('state-action').addEventListener('click', action);$('toggle').addEventListener('click', action);$('reset').addEventListener('click', reset);
+$('mode').addEventListener('change', event => { bridge.report();lastStatus = '';update(setSnakeMode(game, event.target.value)); });
 $('rate').addEventListener('change', event => { bridge.report();update(setSnakeRate(game, Number(event.target.value))); });
 document.querySelectorAll('[data-direction]').forEach(button => button.addEventListener('click', () => direction(button.dataset.direction)));
 const keys = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', a: 'left', s: 'down', d: 'right' };
@@ -105,4 +113,4 @@ stage.addEventListener('pointercancel', () => { pointer = null; });
 function autoPause() { update(pauseSnake(game));bridge.report(); }
 document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
 window.addEventListener('blur', autoPause);window.addEventListener('pagehide', () => { autoPause();bridge.dispose();resizeBridge.dispose(); });
-new ResizeObserver(paint).observe(stage);render();
+new ResizeObserver(paint).observe(stage);barrier.addEventListener('load', paint);bonus.addEventListener('load', paint);render();

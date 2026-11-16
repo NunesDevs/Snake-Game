@@ -13,7 +13,7 @@ class StartupTests(unittest.TestCase):
         pygame.KEYDOWN = 768
         pygame.event.get.return_value = [SimpleNamespace(type=pygame.QUIT)]
         source = Path(__file__).resolve().parents[1] / "game" / "game.py"
-        spec = importlib.util.spec_from_file_location("snake_game_test", source)
+        spec = importlib.util.spec_from_file_location("game._startup_test", source)
         module = importlib.util.module_from_spec(spec)
 
         with patch.dict(sys.modules, {"pygame": pygame}):
@@ -23,7 +23,7 @@ class StartupTests(unittest.TestCase):
             module.gameLoop()
 
         pygame.init.assert_called_once()
-        pygame.display.set_mode.assert_called_once_with((600, 400))
+        pygame.display.set_mode.assert_called_once_with((900, 800))
         pygame.quit.assert_called_once()
 
 
